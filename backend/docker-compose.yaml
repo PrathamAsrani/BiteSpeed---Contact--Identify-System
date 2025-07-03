@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bitespeed_postgres
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: bitespeed_db
+      POSTGRES_USER: bitespeed_user_pratham_asrani
+      POSTGRES_PASSWORD: BiteSpeed_PrathamAsrani
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+volumes:
+  postgres_data:

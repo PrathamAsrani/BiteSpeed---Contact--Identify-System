@@ -17,7 +17,7 @@ async function setupDatabase() {
     await insertSampleData()
 
     console.log("Database setup completed!")
-    process.exit(0)
+    // process.exit(0)
   } catch (error) {
     console.error("Error setting up database:", error)
     process.exit(1)
@@ -25,6 +25,7 @@ async function setupDatabase() {
 }
 
 async function insertSampleData() {
+    await pool.query(`DELETE FROM contacts;`);
   const sampleContacts = [
     {
       phoneNumber: "123456",

@@ -5,8 +5,13 @@ const config = require("./config")
 const routes = require("./routes")
 const errorHandler = require("./middleware/errorHandler")
 const requestLogger = require("./middleware/requestLogger")
+const { setupDatabase } = require("./database/setup")
 
+// rest-api instance
 const app = express()
+
+// database setup and load data
+setupDatabase()
 
 // Security middleware
 app.use(helmet())
@@ -15,7 +20,7 @@ app.use(helmet())
 app.use(
   cors({
     origin: process.env.NODE_ENV === "production" ? ["https://your-frontend-domain.com"] : true,
-    credentials: true,
+    credentials: true, // cookies
   }),
 )
 
