@@ -1,246 +1,204 @@
+
 # Bitespeed Identity Reconciliation API
 
 A robust Node.js backend service for customer identity reconciliation across multiple purchases, built for FluxKart.com's customer experience platform.
 
+---
+
 ## 🚀 Features
 
-- **Identity Reconciliation**: Link customer contacts across different email addresses and phone numbers
-- **Scalable Architecture**: Modular design with clear separation of concerns
-- **Database Optimization**: Efficient PostgreSQL queries with proper indexing
-- **Input Validation**: Comprehensive request validation using Joi
-- **Error Handling**: Robust error handling and logging
-- **Security**: Helmet.js for security headers, CORS configuration
-- **Documentation**: Built-in API documentation endpoint
+- **Identity Reconciliation**: Link customer contacts across different email addresses and phone numbers  
+- **Scalable Architecture**: Modular design with clear separation of concerns  
+- **Database Optimization**: Efficient PostgreSQL queries with proper indexing  
+- **Input Validation**: Comprehensive request validation using Joi  
+- **Error Handling**: Robust error handling and logging  
+- **Security**: Helmet.js for security headers, CORS configuration  
+- **Documentation**: Built-in API documentation endpoint  
+
+---
 
 ## 📋 Requirements
 
-- Node.js (v14 or higher)
-- PostgreSQL (v12 or higher)
-- npm or yarn
+- Docker  
+- Docker Compose  
 
-## 🛠️ Installation
+---
 
-1. **Clone the repository**
-   \`\`\`bash
-   git clone <repository-url>
-   cd bitespeed-identity-reconciliation
-   \`\`\`
+## 🐳 Docker Setup (Recommended)
 
-2. **Install dependencies**
-   \`\`\`bash
-   npm install
-   \`\`\`
+### 🔧 Steps to Run
 
-3. **Environment Setup**
-   \`\`\`bash
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/PrathamAsrani/BiteSpeed---Contact--Identify-System.git
+   cd BiteSpeed---Contact--Identify-System
+   ```
+
+2. **Build and Run with Docker**
+   ```bash
+   docker-compose down -v          # Optional: Clean previous volumes
+   docker-compose up --build
+   ```
+
+3. **Access the API**
+   - API URL: [http://localhost:3000](http://localhost:3000)
+   - Health Check: [http://localhost:3000/health](http://localhost:3000/health)
+
+4. **Access PostgreSQL**
+   ```bash
+   docker exec -it bitespeed_postgres psql -U bitespeed_user_pratham_asrani -d bitespeed_db
+   ```
+
+---
+
+## 🧪 Testing via Postman
+
+A Postman collection is included in the repository. You can import the `bitespeed.postman_collection.json` file into Postman to test different scenarios.
+
+---
+
+## 🔧 Configuration (for non-Docker setup)
+
+If you want to run locally (outside Docker):
+
+1. Install Node.js & PostgreSQL manually
+2. Copy and edit environment config:
+   ```bash
    cp .env.example .env
-   # Edit .env with your database credentials
-   \`\`\`
-
-4. **Database Setup**
-   \`\`\`bash
-   # Create your PostgreSQL database first
+   ```
+3. Create DB manually:
+   ```bash
    createdb bitespeed_db
-   
-   # Run the setup script
+   npm install
    npm run setup-db
-   \`\`\`
-
-5. **Start the server**
-   \`\`\`bash
-   # Development
    npm run dev
-   
-   # Production
-   npm start
-   \`\`\`
+   ```
 
-## 🔧 Configuration
+---
 
-### Environment Variables
+## 🔄 API Endpoints
 
-\`\`\`env
-# Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/bitespeed_db
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=bitespeed_db
-DB_USER=username
-DB_PASSWORD=password
+### POST `/identify`
 
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-\`\`\`
-
-## 📡 API Endpoints
-
-### POST /identify
-
-Identifies and reconciles customer contact information.
-
-**Request Body:**
-\`\`\`json
+**Request Body**:
+```json
 {
-  "email": "string (optional)",
-  "phoneNumber": "string|number (optional)"
+  "email": "test@example.com",
+  "phoneNumber": "1234567890"
 }
-\`\`\`
+```
 
-**Response:**
-\`\`\`json
+**Response**:
+```json
 {
   "contact": {
     "primaryContatctId": 1,
-    "emails": ["primary@email.com", "secondary@email.com"],
-    "phoneNumbers": ["1234567890", "0987654321"],
-    "secondaryContactIds": [2, 3]
+    "emails": ["test@example.com"],
+    "phoneNumbers": ["1234567890"],
+    "secondaryContactIds": []
   }
 }
-\`\`\`
+```
 
-### GET /health
+### GET `/health`
 
-Health check endpoint.
-
-**Response:**
-\`\`\`json
+**Response**:
+```json
 {
   "status": "OK",
-  "timestamp": "2023-04-01T00:00:00.000Z",
+  "timestamp": "2025-07-03T00:00:00.000Z",
   "service": "Bitespeed Identity Reconciliation"
 }
-\`\`\`
+```
 
-## 🏗️ Architecture
+---
 
-\`\`\`
+## 🏗️ Folder Structure
+
+```
 src/
-├── config/          # Configuration files
-├── controllers/     # Request handlers
-├── services/        # Business logic
-├── models/          # Data models
-├── routes/          # Route definitions
-├── middleware/      # Custom middleware
-├── utils/           # Utility functions
-├── database/        # Database setup and migrations
-└── app.js          # Application entry point
-\`\`\`
+├── config/
+├── controllers/
+├── services/
+├── models/
+├── routes/
+├── middleware/
+├── utils/
+├── database/
+└── app.js
+```
 
-## 🔄 Business Logic
+---
 
-### Contact Linking Rules
+## 🧠 Contact Linking Rules
 
-1. **New Contact**: If no existing contact matches email or phone, create a new primary contact
-2. **Partial Match**: If email or phone matches but contains new information, create a secondary contact
-3. **Primary Linking**: When two primary contacts share common information, the older one remains primary
+1. **New Contact**: If no email/phone match → create new primary contact  
+2. **Partial Match**: Match on one field only → create secondary contact  
+3. **Multiple Primaries**: Merge to oldest primary, link others as secondary  
 
-### Example Scenarios
+---
 
-**Scenario 1: New Customer**
-\`\`\`json
-Request: {"email": "new@customer.com", "phoneNumber": "1234567890"}
-Result: Creates new primary contact
-\`\`\`
+## 🧪 Sample CURL Test
 
-**Scenario 2: Existing Customer with New Info**
-\`\`\`json
-Request: {"email": "existing@customer.com", "phoneNumber": "9876543210"}
-Result: Creates secondary contact linked to existing primary
-\`\`\`
+```bash
+curl -X POST http://localhost:3000/identify   -H "Content-Type: application/json"   -d '{"email": "test@example.com", "phoneNumber": "1234567890"}'
+```
 
-**Scenario 3: Linking Separate Customers**
-\`\`\`json
-Request: {"email": "customer1@email.com", "phoneNumber": "customer2-phone"}
-Result: Links two separate primary contacts, older becomes primary
-\`\`\`
+---
 
-## 🧪 Testing
+## 🐘 Database Schema
 
-\`\`\`bash
-# Run tests
-npm test
+```sql
+CREATE TABLE contacts (
+  id SERIAL PRIMARY KEY,
+  phone_number VARCHAR(20),
+  email VARCHAR(255),
+  linked_id INTEGER REFERENCES contacts(id),
+  link_precedence VARCHAR(10) CHECK (link_precedence IN ('primary', 'secondary')),
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMPTZ
+);
+```
 
-# Test the API manually
-curl -X POST http://localhost:3000/identify \
-  -H "Content-Type: application/json" \
-  -d '{"email": "test@example.com", "phoneNumber": "1234567890"}'
-\`\`\`
+---
+
+## 🛡️ Security & Monitoring
+
+- Helmet for HTTP headers  
+- CORS enabled  
+- Morgan logging  
+- `/health` endpoint for uptime monitoring  
+
+---
 
 ## 🚀 Deployment
 
-### Using Render.com (Free Hosting)
+### 🔄 Render.com (Free Hosting)
 
-1. **Prepare for deployment**
-   - Ensure all environment variables are set
-   - Database should be accessible from the internet
+1. Connect your GitHub repo on [Render](https://render.com)
+2. Choose:
+   - **Environment**: `Docker`
+   - **Dockerfile Path**: `./Dockerfile`
+   - **Docker Build Context Directory**: `.`
+   - **Docker Command**: `npm start` *(or your start command)*
+3. Add the following Environment Variables:
 
-2. **Deploy to Render**
-   - Connect your GitHub repository
-   - Set environment variables in Render dashboard
-   - Deploy the service
+| Key           | Value                              |
+|---------------|------------------------------------|
+| DATABASE_URL  | `postgres://...` (Render Postgres) |
+| PORT          | `10000` or default `3000`          |
+| NODE_ENV      | `production`                       |
+| JWT_SECRET    | `I_LOVE_BITESPEED`                 |
 
-3. **Database Setup**
-   - Use Render's PostgreSQL service or external provider
-   - Run database setup after deployment
+4. Done! Your API will be live at `https://<your-app>.onrender.com`
 
-### Environment Variables for Production
-
-\`\`\`env
-NODE_ENV=production
-DATABASE_URL=your-production-database-url
-PORT=10000
-\`\`\`
-
-## 📊 Database Schema
-
-\`\`\`sql
-CREATE TABLE contacts (
-    id SERIAL PRIMARY KEY,
-    phone_number VARCHAR(20),
-    email VARCHAR(255),
-    linked_id INTEGER REFERENCES contacts(id),
-    link_precedence VARCHAR(10) CHECK (link_precedence IN ('primary', 'secondary')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE
-);
-\`\`\`
-
-## 🔍 Monitoring and Logging
-
-- Request/Response logging with Morgan
-- Error tracking and handling
-- Database connection monitoring
-- Health check endpoint for uptime monitoring
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📝 License
-
-MIT License - see LICENSE file for details
+---
 
 ## 👨‍💻 Author
 
-**Pratham Asrani**
-- GitHub: [@prathamasrani](https://github.com/prathamasrani)
-
-## 🔗 Live API
-
-**Endpoint**: `https://your-app-name.onrender.com/identify`
-
-Test the live API:
-\`\`\`bash
-curl -X POST https://your-app-name.onrender.com/identify \
-  -H "Content-Type: application/json" \
-  -d '{"email": "test@example.com", "phoneNumber": "1234567890"}'
-\`\`\`
+**Pratham Asrani**  
+GitHub: [@PrathamAsrani](https://github.com/PrathamAsrani)
 
 ---
 
