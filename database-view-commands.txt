@@ -4,24 +4,3 @@ docker-compose up --build
 // for db: 
 docker exec -it bitespeed_postgres psql -U bitespeed_user_pratham_asrani -d bitespeed_db
 
-
-# Match group 1
-POST http://localhost:3000/identify
-{
-  "email": "asrani@bitespeed.in",
-  "phoneNumber": null
-}
-
-# Match group 3
-POST http://localhost:3000/identify
-{
-  "email": "raj@gmail.com",
-  "phoneNumber": "8000000000"
-}
-
-# Match group 6 -> will create secondary if merging two primarys
-POST http://localhost:3000/identify
-{
-  "email": "ranbir@kapoor.com",
-  "phoneNumber": "8080808080"
-}
