@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bitespeed_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bitespeed_db
+      POSTGRES_USER: bitespeed_user_pratham_asrani
+      POSTGRES_PASSWORD: BiteSpeed_PrathamAsrani
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: bitespeed_api
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: bitespeed_db
+      PGUSER: bitespeed_user_pratham_asrani
+      PGPASSWORD: BiteSpeed_PrathamAsrani
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: npm run dev
+
+volumes:
+  postgres_data:

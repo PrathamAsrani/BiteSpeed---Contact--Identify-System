@@ -9,6 +9,10 @@ router.get("/health", IdentityController.health)
 // Main identity reconciliation endpoint
 router.post("/identify", IdentityController.identify)
 
+// create route
+router.post("/create-contact", IdentityController.createContact)
+
+
 // API documentation route
 router.get("/", (req, res) => {
   res.json({

@@ -1,5 +1,0 @@
-
-
-docker-compose up -d
-
-docker exec -it bitespeed_postgres psql -U bitespeed_user_pratham_asrani -d bitespeed_db
